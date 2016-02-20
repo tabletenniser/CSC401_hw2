@@ -29,15 +29,35 @@ function outSentence = preprocess( inSentence, language )
   outSentence = inSentence;
 
   % perform language-agnostic changes
-  % TODO: your code here
-  %    e.g., outSentence = regexprep( outSentence, 'TODO', 'TODO');
+  % separate sentence end punctuations
+  outSentence = regexprep( outSentence, '[\.:\?]$', ' $1$');
+  % separate commas, colons, semicolons, parenthesis, dashes, math operations, question marks 
+  outSentence = regexprep( outSentence, '([,:;\)\+=-\*\/>\?]) ', ' $1 ');
+  outSentence = regexprep( outSentence, ' ([\(<])', ' $1 ');
 
   switch language
    case 'e'
-    % TODO: your code here
+    % 1) separate 's and s' into its own token
+    outSentence = regexprep( outSentence, '''s ', ' ''s ');
+    outSentence = regexprep( outSentence, 's'' ', 's '' ');
+    outSentence = regexprep( outSentence, 'n''t', 'n ''t');
 
    case 'f'
-    % TODO: your code here
+    % 1) Separate leading l' from concatenated words
+    % outSentence = regexprep( outSentence, ' l''', ' l'' ');
+    % 2) Separate single leading consonant and ' from concatenated word
+    outSentence = regexprep(outSentence, '(.*) ([qwrtypsdfghjklzxcvbnm]'')(.*)', '$1 $2 $3');
+    % 3) Separate qu and ' from concatenated word
+    outSentence = regexprep(outSentence, ' qu''', ' qu'' ');
+    % 4) Separate [on|il] and ' from concatenated word
+    outSentence = regexprep(outSentence, '''on', ''' on');
+    outSentence = regexprep(outSentence, '''il', ''' il');
+    % 5) d'abord, d'accord, d'ailleurs and d'habitable should not be
+    % separated
+    outSentence = regexprep(outSentence, 'd'' abord', 'd''abord');
+    outSentence = regexprep(outSentence, 'd'' accord', 'd''accord');
+    outSentence = regexprep(outSentence, 'd'' ailleurs', 'd''ailleurs');
+    outSentence = regexprep(outSentence, 'd'' habitable', 'd''habitable');
 
   end
 
