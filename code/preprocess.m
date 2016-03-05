@@ -57,7 +57,7 @@ function outSentence = preprocess( inSentence, language )
     outSentence = regexprep(outSentence, 'd'' abord', 'd''abord');
     outSentence = regexprep(outSentence, 'd'' accord', 'd''accord');
     outSentence = regexprep(outSentence, 'd'' ailleurs', 'd''ailleurs');
-    outSentence = regexprep(outSentence, 'd'' habitable', 'd''habitable');
+    outSentence = regexprep(outSentence, 'd'' habitude', 'd''habitude');
 
   end
 
