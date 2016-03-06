@@ -47,5 +47,41 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
   words = strsplit(' ', sentence);
 
   % TODO: the student implements the following
-  % TODO: once upon a time there was a curmudgeonly orangutan named Jub-Jub.
+  prev_word = '__DNE__';
+  for word = words
+      word = char(word);
+      
+      % skip if empty
+      if isempty(word)
+          continue
+      end
+      
+      % Calculate prob (without taking log)
+      if strcmp(prev_word, '__DNE__')
+          % init
+          prev_word = word;   
+          logProb = 1;
+      else
+          % calculate UNIGRAM frequecy defined as count(w_i)
+          if isfield(LM.uni, prev_word)
+              uni_freq = LM.uni.(prev_word);
+          else
+              uni_freq = 0;
+          end
+          
+          % calculate BIGRAM frequecy defined as count(w_(i-1), w_i)
+          if isfield(LM.bi, prev_word) && isfield(LM.bi.(prev_word), word)
+              bi_freq = LM.bi.(prev_word).(word);
+          else
+              bi_freq = 0;
+          end
+
+          % dirty deed done diry cheap
+          partial_prob = (bi_freq + delta) / (uni_freq + delta * vocabSize);
+          logProb = logProb * partial_prob;
+      end
+  end
+  
+  % take the log to get actual logProb
+  logProb = -log(logProb);
 return
