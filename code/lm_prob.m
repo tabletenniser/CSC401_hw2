@@ -80,6 +80,9 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
           
           % dirty deed done diry cheap
           partial_prob = (bi_freq + delta) / (uni_freq + delta * vocabSize);
+          if isnan(partial_prob)
+              partial_prob = 0;
+          end
           logProb = logProb * partial_prob;
           
           % word => prev_word
@@ -88,5 +91,5 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
   end
   
   % take the log to get actual logProb
-  logProb = -log(logProb);
+  logProb = log(logProb);
 return

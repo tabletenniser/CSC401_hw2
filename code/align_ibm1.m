@@ -72,12 +72,30 @@ function [eng, fre] = read_hansard(mydir, numSentences)
 %
 %         eng{i} = strsplit(' ', preprocess(english_sentence, 'e'));
 %
-  %eng = {};
-  %fre = {};
+  eng = {};
+  fre = {};
+  
+  AM_index = 1;
+  
+  DD_en = dir( [ dataDir, filesep, '*', 'e'] );
+  DD_fr = dir( [ dataDir, filesep, '*', 'f'] );
+  
+  % Iterate through all en/fr file pairs
+  for iFile=1:length(DD_en)
 
-  % TODO: your code goes here.
-
-end
+    fprintf('File %s (#%d/%d)\n', DD(iFile).name, iFile, length(DD))
+    
+    % read all lines from en/fr file pairs
+    lines_en = textread([dataDir, filesep, DD_en(iFile).name], '%s','delimiter','\n');
+    lines_fr = textread([dataDir, filesep, DD_fr(iFile).name], '%s','delimiter','\n');
+    
+    % pre-process and split each line into eng and fre
+    for line_idx=1:length(lines_en)
+        eng{AM_index} = strsplit(' ', preprocess(lines_en{line_idx}, 'e'));
+        fre{AM_index} = strsplit(' ', preprocess(lines_fr{line_idx}, 'f'));
+        AM_index = AM_index + 1;
+    end
+  end
 
 
 function AM = initialize(eng, fre)
