@@ -1,0 +1,5 @@
+# all windows tmp files
+*~
+
+# all mac random bs
+.DS_Store

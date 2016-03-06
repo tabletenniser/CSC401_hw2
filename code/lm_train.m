@@ -37,18 +37,58 @@ SENTENDMARK = 'SENTEND';
 
 DD = dir( [ dataDir, filesep, '*', language] );
 
-disp([ dataDir, filesep, '.*', language] );
+disp([ dataDir, filesep, '.*', language] ); 
+
+fprintf('TOTAL of %d %s\n', length(DD), ' files')
 
 for iFile=1:length(DD)
+    
+  fprintf('File %s (#%d/%d)\n', DD(iFile).name, iFile, length(DD))
 
   lines = textread([dataDir, filesep, DD(iFile).name], '%s','delimiter','\n');
 
   for l=1:length(lines)
-
     processedLine =  preprocess(lines{l}, language);
     words = strsplit(' ', processedLine );
     
+    prev_word = 'DNE';
     % TODO: THE STUDENT IMPLEMENTS THE FOLLOWING
+    for word = words
+        % cell array => string to make LM.uni.(word) happy
+        word = char(word);
+        
+        % skip the empty ones
+        if isempty(word)
+            continue
+        end          
+        
+        % UNIGRAM + BIGRAM INIT
+        if isfield(LM.uni, word)
+            LM.uni.(word) = LM.uni.(word) + 1;
+        else
+            % previously seen
+            LM.uni.(word) = 0;
+            if ~strcmp(word, CSC401_A2_DEFNS.SENTEND)
+                % initialize bigram key 1 iff it is not SENTEND
+                % because p(word|SENTEND) = 0 V word
+                LM.bi.(word) = struct();
+            end
+                
+        end
+                
+        % BIGRAM
+        if strcmp(word, CSC401_A2_DEFNS.SENTSTART)
+            % nothing is in front of SENTSTART
+            prev_word = word;
+        else
+            if isfield(LM.bi.(prev_word), word)
+                LM.bi.(prev_word).(word) = LM.bi.(prev_word).(word) + 1;
+            else
+                LM.bi.(prev_word).(word) = 0;
+            end
+            prev_word = word;
+        end
+    end
 
     % TODO: THE STUDENT IMPLEMENTED THE PRECEDING
   end
