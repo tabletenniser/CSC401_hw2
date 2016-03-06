@@ -50,7 +50,7 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
   prev_word = '__DNE__';
   for word = words
       word = char(word);
-      
+
       % skip if empty
       if isempty(word)
           continue
@@ -65,6 +65,7 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
           % calculate UNIGRAM frequecy defined as count(w_i)
           if isfield(LM.uni, prev_word)
               uni_freq = LM.uni.(prev_word);
+              fprintf('uni_frequency P(%s) is %d\n', prev_word, uni_freq)
           else
               uni_freq = 0;
           end
@@ -72,13 +73,17 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
           % calculate BIGRAM frequecy defined as count(w_(i-1), w_i)
           if isfield(LM.bi, prev_word) && isfield(LM.bi.(prev_word), word)
               bi_freq = LM.bi.(prev_word).(word);
+              fprintf('bi_frequency P(%s|%s) is %d\n', word, prev_word, bi_freq)
           else
               bi_freq = 0;
           end
-
+          
           % dirty deed done diry cheap
           partial_prob = (bi_freq + delta) / (uni_freq + delta * vocabSize);
           logProb = logProb * partial_prob;
+          
+          % word => prev_word
+          prev_word = word;
       end
   end
   

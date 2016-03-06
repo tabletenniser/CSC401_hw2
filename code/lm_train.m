@@ -66,8 +66,8 @@ for iFile=1:length(DD)
         if isfield(LM.uni, word)
             LM.uni.(word) = LM.uni.(word) + 1;
         else
-            % previously seen
-            LM.uni.(word) = 0;
+            % previously unseen
+            LM.uni.(word) = 1;
             if ~strcmp(word, CSC401_A2_DEFNS.SENTEND)
                 % initialize bigram key 1 iff it is not SENTEND
                 % because p(word|SENTEND) = 0 V word
@@ -84,7 +84,7 @@ for iFile=1:length(DD)
             if isfield(LM.bi.(prev_word), word)
                 LM.bi.(prev_word).(word) = LM.bi.(prev_word).(word) + 1;
             else
-                LM.bi.(prev_word).(word) = 0;
+                LM.bi.(prev_word).(word) = 1;
             end
             prev_word = word;
         end
