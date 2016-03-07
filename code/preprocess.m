@@ -31,7 +31,9 @@ function outSentence = preprocess( inSentence, language )
 
   % perform language-agnostic changes
   % separate sentence end punctuations
-  outSentence = regexprep( outSentence, '[\.:\?]$', ' $1$');
+  outSentence = regexprep( outSentence, '([\.!\?]+) (SENTEND) ', '$1 $2');
+  % separate dashes between parenthesis
+  outSentence = regexprep( outSentence, '(\(.*)(-)(.*\))', '$1 $2 $3');
   % separate commas, colons, semicolons, parenthesis, dashes, math operations, question marks 
   outSentence = regexprep( outSentence, '([,:;\)\+=-\*\/>\?]) ', ' $1 ');
   outSentence = regexprep( outSentence, ' ([\(<])', ' $1 ');
