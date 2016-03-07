@@ -64,22 +64,22 @@ function [eng, fre] = read_hansard(mydir, numSentences)
 %
 % Remember that the i^th line in fubar.e corresponds to the i^th line in fubar.f
 % You can decide what form variables 'eng' and 'fre' take, although it may be easiest
-% if both 'eng' and 'fre' are cell-arrays of cell-arrays, where the i^th element of 
+% if both 'eng' and 'fre' are cell-arrays of cell-arrays, where the i^th element of
 % 'eng', for example, is a cell-array of words that you can produce with
 %
 %         eng{i} = strsplit(' ', preprocess(english_sentence, 'e'));
 %
-  eng = {};
-  fre = {};
-  
-  AM_index = 1;
-  
-  DD_en = dir( [ dataDir, filesep, '*', 'e'] );
-  DD_fr = dir( [ dataDir, filesep, '*', 'f'] );
-  
-  % Iterate through all en/fr file pairs
-  for iFile=1:length(DD_en)
+eng = {};
+fre = {};
 
+AM_index = 1;
+
+DD_en = dir( [ dataDir, filesep, '*', 'e'] );
+DD_fr = dir( [ dataDir, filesep, '*', 'f'] );
+
+% Iterate through all en/fr file pairs
+for iFile=1:length(DD_en)
+    
     fprintf('File %s (#%d/%d)\n', DD(iFile).name, iFile, length(DD))
     
     % read all lines from en/fr file pairs
@@ -91,8 +91,13 @@ function [eng, fre] = read_hansard(mydir, numSentences)
         eng{AM_index} = strsplit(' ', preprocess(lines_en{line_idx}, 'e'));
         fre{AM_index} = strsplit(' ', preprocess(lines_fr{line_idx}, 'f'));
         AM_index = AM_index + 1;
+        if AM_index > numSentences
+            % read until numSentences
+            return
+        end
     end
-  end
+end
+end
 
 
 function AM = initialize(eng, fre)
@@ -101,32 +106,28 @@ function AM = initialize(eng, fre)
 % Only set non-zero probabilities where word pairs appear in corresponding sentences.
 %
     AM = {}; % AM.(english_word).(foreign_word)
-    n_words = 0
+    n_words = 0;
     for i=1:length(eng)
         % iterate through all eng and french dicts
-        for en_word = eng
-            en_word = char(en_word)
-            for fr_word = fre
-                fr_word = char(fr_word)
+        for en_word = eng{i}
+            en_word = char(en_word);
+            for fr_word = fre{i}
+                fr_word = char(fr_word);
                 if ~isfield(AM, en_word)
                     AM.(en_word) = stuct();
-                    n_word += 1
                 end
+                AM.(en_word).(fr_word) = 1;
             end
         end
     end
     fprintf('Total of %d different combinations, initializing all P to 1/%d\n', n_word, n_word);
-    for i=1:length(eng)
-        % iterate through all eng and french dicts
-        for en_word = eng
-            en_word = char(en_word)
-            for fr_word = fre
-                fr_word = char(fr_word)
-                AM.(en_word).(fr_word) = 1.0/n_word;
-            end
+    for en_word=fieldnames(AM)
+        multiplicity = length(fieldnames(AM.(en_word)));
+        for fr_word = fieldnames(AM.(en_word))
+            AM.(en_word).(fr_end) = 1.0/multiplicity;
         end
     end
-
+    
     % TODO: your code goes here
 
 end
@@ -137,29 +138,30 @@ function t = em_step(t, eng, fre)
 %
     % EXPECTATION STEOP
     for sentence=1:length(eng)
-        en_words = eng{sentence}
-        fr_words = fre{sentence}
+        en_words = eng{sentence};
+        fr_words = fre{sentence};
 
         % generate all permutations
-        permutations = perms(1:length(fr_words))
-        perm_prob = {}
+        permutations = perms(1:length(fr_words));
+        perm_prob = zeros(length(permutations));
 
         % calcualte P(F|a, E) for each a
         for i=length(permutations)
-            alignment = permutations(i, :)
-            partial_prob = 1
+            alignment = permutations(i, :);
+            partial_prob = 1;
             for fr_idx=1:length(alignment)
-                fr_word = fr_words{fr_idx}
-                en_word = en_words{alignment{fr_idx}}
-                partial_prob = partial_prob * t.(en_word).(fr_word)
+                fr_word = fr_words{fr_idx};
+                en_word = en_words{alignment{fr_idx}};
+                partial_prob = partial_prob * t.(en_word).(fr_word);
             end 
 
             % save this probability for later M step      
-            perm_prob{i} = partial_prob
+            perm_prob{i} = partial_prob;
         end
 
         % calculate P(a|E, F)
-        perm_prob = perm_prob / sum(perm_prob)
+        perm_prob = perm_prob / sum(perm_prob);
+    end
 end
 
 
