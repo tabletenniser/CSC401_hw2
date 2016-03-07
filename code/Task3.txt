@@ -1,0 +1,6 @@
+The experimental result on perplexity of different smoothing parameters (delta) on the English and French language
+models are shown below:
+
+delta:      0.001       0.2      0.4     0.6     0.8     1.0
+English:    12.94       20.35   24.01    26.82   29.18   31.26
+French:     12.35       21.87   26.35    29.80   32.73   35.31
