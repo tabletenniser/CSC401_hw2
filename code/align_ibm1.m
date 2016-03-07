@@ -135,8 +135,31 @@ function t = em_step(t, eng, fre)
 % 
 % One step in the EM algorithm.
 %
-  
-  % TODO: your code goes here
+    % EXPECTATION STEOP
+    for sentence=1:length(eng)
+        en_words = eng{sentence}
+        fr_words = fre{sentence}
+
+        % generate all permutations
+        permutations = perms(1:length(fr_words))
+        perm_prob = {}
+
+        % calcualte P(F|a, E) for each a
+        for i=length(permutations)
+            alignment = permutations(i, :)
+            partial_prob = 1
+            for fr_idx=1:length(alignment)
+                fr_word = fr_words{fr_idx}
+                en_word = en_words{alignment{fr_idx}}
+                partial_prob = partial_prob * t.(en_word).(fr_word)
+            end 
+
+            % save this probability for later M step      
+            perm_prob{i} = partial_prob
+        end
+
+        % calculate P(a|E, F)
+        perm_prob = perm_prob / sum(perm_prob)
 end
 
 
