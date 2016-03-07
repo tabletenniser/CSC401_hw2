@@ -50,9 +50,6 @@ function AM = align_ibm1(trainDir, numSentences, maxIter, fn_AM)
   end
 
 
-
-
-
 % --------------------------------------------------------------------------------
 % 
 %  Support functions
@@ -104,6 +101,31 @@ function AM = initialize(eng, fre)
 % Only set non-zero probabilities where word pairs appear in corresponding sentences.
 %
     AM = {}; % AM.(english_word).(foreign_word)
+    n_words = 0
+    for i=1:length(eng)
+        % iterate through all eng and french dicts
+        for en_word = eng
+            en_word = char(en_word)
+            for fr_word = fre
+                fr_word = char(fr_word)
+                if ~isfield(AM, en_word)
+                    AM.(en_word) = stuct();
+                    n_word += 1
+                end
+            end
+        end
+    end
+    fprintf('Total of %d different combinations, initializing all P to 1/%d\n', n_word, n_word);
+    for i=1:length(eng)
+        % iterate through all eng and french dicts
+        for en_word = eng
+            en_word = char(en_word)
+            for fr_word = fre
+                fr_word = char(fr_word)
+                AM.(en_word).(fr_word) = 1.0/n_word;
+            end
+        end
+    end
 
     % TODO: your code goes here
 

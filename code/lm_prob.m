@@ -60,7 +60,7 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
       % calculate UNIGRAM frequecy defined as count(w_i)
       if isfield(LM.uni, word)
           uni_freq = LM.uni.(word);
-          fprintf('uni_frequency P(%s) is %d\n', word, uni_freq)
+          %fprintf('uni_frequency P(%s) is %d\n', word, uni_freq)
       else
           uni_freq = 0;
       end
@@ -75,7 +75,7 @@ function logProb = lm_prob(sentence, LM, type, delta, vocabSize)
       % calculate BIGRAM frequecy defined as count(w_(i-1), w_i)
       if isfield(LM.bi, prev_word) && isfield(LM.bi.(prev_word), word)
           bi_freq = LM.bi.(prev_word).(word);
-          fprintf('bi_frequency P(%s|%s) is %d\n', word, prev_word, bi_freq)
+          %fprintf('bi_frequency P(%s|%s) is %d\n', word, prev_word, bi_freq)
       else
           bi_freq = 0;
       end
