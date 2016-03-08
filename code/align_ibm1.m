@@ -1,18 +1,18 @@
 function AM = align_ibm1(trainDir, numSentences, maxIter, fn_AM)
 %
 %  align_ibm1
-% 
-%  This function implements the training of the IBM-1 word alignment algorithm. 
+%
+%  This function implements the training of the IBM-1 word alignment algorithm.
 %  We assume that we are implementing P(foreign|english)
 %
 %  INPUTS:
 %
-%       dataDir      : (directory name) The top-level directory containing 
+%       dataDir      : (directory name) The top-level directory containing
 %                                       data from which to train or decode
 %                                       e.g., '/u/cs401/A2_SMT/data/Toy/'
 %       numSentences : (integer) The maximum number of training sentences to
-%                                consider. 
-%       maxIter      : (integer) The maximum number of iterations of the EM 
+%                                consider.
+%       maxIter      : (integer) The maximum number of iterations of the EM
 %                                algorithm.
 %       fn_AM        : (filename) the location to save the alignment model,
 %                                 once trained.
@@ -21,22 +21,22 @@ function AM = align_ibm1(trainDir, numSentences, maxIter, fn_AM)
 %       AM           : (variable) a specialized alignment model structure
 %
 %
-%  The file fn_AM must contain the data structure called 'AM', which is a 
+%  The file fn_AM must contain the data structure called 'AM', which is a
 %  structure of structures where AM.(english_word).(foreign_word) is the
 %  computed expectation that foreign_word is produced by english_word
 %
 %       e.g., LM.house.maison = 0.5       % TODO
-% 
+%
 % Template (c) 2011 Jackie C.K. Cheung and Frank Rudzicz
-  
+
   global CSC401_A2_DEFNS
-  
+
   AM = struct();
-  
+
   % Read in the training data
   [eng, fre] = read_hansard(trainDir, numSentences);
 
-  % Initialize AM uniformly 
+  % Initialize AM uniformly
   AM = initialize(eng, fre);
 
   % Iterate between E and M steps
@@ -45,13 +45,13 @@ function AM = align_ibm1(trainDir, numSentences, maxIter, fn_AM)
   end
 
   % Save the alignment model
-  save( fn_AM, 'AM', '-mat'); 
+  save( fn_AM, 'AM', '-mat');
 
   end
 
 
 % --------------------------------------------------------------------------------
-% 
+%
 %  Support functions
 %
 % --------------------------------------------------------------------------------
@@ -74,18 +74,19 @@ fre = {};
 
 AM_index = 1;
 
-DD_en = dir( [ dataDir, filesep, '*', 'e'] );
-DD_fr = dir( [ dataDir, filesep, '*', 'f'] );
+DD_en = dir( [ mydir, filesep, '*', 'e'] );
+DD_fr = dir( [ mydir, filesep, '*', 'f'] );
 
 % Iterate through all en/fr file pairs
 for iFile=1:length(DD_en)
-    
-    fprintf('File %s (#%d/%d)\n', DD(iFile).name, iFile, length(DD))
-    
+
+    fprintf('File %s (#%d/%d)\n', DD_en(iFile).name, iFile, length(DD_en))
+    fprintf('File %s (#%d/%d)\n', DD_fr(iFile).name, iFile, length(DD_fr))
+
     % read all lines from en/fr file pairs
-    lines_en = textread([dataDir, filesep, DD_en(iFile).name], '%s','delimiter','\n');
-    lines_fr = textread([dataDir, filesep, DD_fr(iFile).name], '%s','delimiter','\n');
-    
+    lines_en = textread([mydir, filesep, DD_en(iFile).name], '%s','delimiter','\n');
+    lines_fr = textread([mydir, filesep, DD_fr(iFile).name], '%s','delimiter','\n');
+
     % pre-process and split each line into eng and fre
     for line_idx=1:length(lines_en)
         eng{AM_index} = strsplit(' ', preprocess(lines_en{line_idx}, 'e'));
@@ -114,26 +115,30 @@ function AM = initialize(eng, fre)
             for fr_word = fre{i}
                 fr_word = char(fr_word);
                 if ~isfield(AM, en_word)
-                    AM.(en_word) = stuct();
+                    AM.(en_word) = struct();
                 end
                 AM.(en_word).(fr_word) = 1;
             end
         end
     end
-    fprintf('Total of %d different combinations, initializing all P to 1/%d\n', n_word, n_word);
-    for en_word=fieldnames(AM)
-        multiplicity = length(fieldnames(AM.(en_word)));
-        for fr_word = fieldnames(AM.(en_word))
-            AM.(en_word).(fr_end) = 1.0/multiplicity;
+    en_words = fieldnames(AM);
+    for i = 1:length(en_words)
+    %for en_word=fieldnames(AM)
+        %en_word = char(en_word);
+        multiplicity = length(fieldnames(AM.(en_words{i})));
+        %for fr_word = fieldnames(AM.(en_word))
+        fr_words = fieldnames(AM.(en_words{i}))
+        for j = 1:length(fr_words)
+            AM.(en_words{i}).(fr_words{j}) = 1.0/multiplicity;
         end
     end
-    
+
     % TODO: your code goes here
 
 end
 
 function t = em_step(t, eng, fre)
-% 
+%
 % One step in the EM algorithm.
 %
     % E step
@@ -141,31 +146,31 @@ function t = em_step(t, eng, fre)
         % iterate through all sentence pairs
         en_words = eng{sentence};
         fr_words = fre{sentence};
-        
+
         % Calculate translation probability P(F|a, E)
-        p_translation = strcut();
-        
+        p_translation = struct();
+
         % iterate through all allignments
         for fr_word = fr_words
             fr_word = char(fr_word);
-            
+
             partial_sum = 0.0;
-            
+
             % initialize hash table
             if ~isfield(p_translation, fr_word)
                 p_translation.(fr_word) = struct();
             end
-            
+
             % calculat SUM(p(F|a, E))
             for en_word = en_words
                 en_word = char(en_word);
                 partial_sum = partial_sum + t.(en_word).(fr_word);
             end
-            
+
             % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
             for en_word = en_words
                 en_word = char(en_word);
-                
+
                 % initialize hash table
                 if ~isfield(p_translation.(fr_word), en_word)
                     p_translation.(fr_word).(en_word) = 0;
@@ -174,16 +179,16 @@ function t = em_step(t, eng, fre)
             end
         end
     end
-    
+
     % M step - update the probabilities
     for en_word = unique(eng)
         partial_sum = 0;
-        
+
         % calculate partial sum
         for fr_word = fieldnames(t.(en_word))
             partial_sum = partial_sum + p_translation.(fr_word).(en_word);
         end
-        
+
         for fr_word = fieldnames(t.(en_word))
             t.(en_word).(fr_word) = p_translation.(fr_word).(en_word) / partial_sum;
         end
