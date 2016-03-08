@@ -182,19 +182,25 @@ function t = em_step(t, eng, fre)
     
     unique_eng_words = {};
     for eng_words = eng
-        unique_eng_words = horzcat(unique_eng_words, eng_words);
+        unique_eng_words = horzcat(unique_eng_words, eng_words{1});
+    end
+    fprintf('UNIQUE WORDS: \n')
+    disp(unique_eng_words)
     unique_eng_words = unique(unique_eng_words);
 
     % M step - update the probabilities
     for en_word = unique_eng_words
+        en_word = char(en_word);
         partial_sum = 0;
 
         % calculate partial sum
         for fr_word = fieldnames(t.(en_word))
+            fr_word = char(fr_word)
             partial_sum = partial_sum + p_translation.(fr_word).(en_word);
         end
 
         for fr_word = fieldnames(t.(en_word))
+            fr_word = char(fr_word)
             t.(en_word).(fr_word) = p_translation.(fr_word).(en_word) / partial_sum;
         end
     end
