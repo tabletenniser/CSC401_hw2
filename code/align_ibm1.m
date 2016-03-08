@@ -136,32 +136,56 @@ function t = em_step(t, eng, fre)
 % 
 % One step in the EM algorithm.
 %
-    % EXPECTATION STEOP
+    % E step
     for sentence=1:length(eng)
+        % iterate through all sentence pairs
         en_words = eng{sentence};
         fr_words = fre{sentence};
-
-        % generate all permutations
-        permutations = perms(1:length(fr_words));
-        perm_prob = zeros(length(permutations));
-
-        % calcualte P(F|a, E) for each a
-        for i=length(permutations)
-            alignment = permutations(i, :);
-            partial_prob = 1;
-            for fr_idx=1:length(alignment)
-                fr_word = fr_words{fr_idx};
-                en_word = en_words{alignment{fr_idx}};
-                partial_prob = partial_prob * t.(en_word).(fr_word);
-            end 
-
-            % save this probability for later M step      
-            perm_prob{i} = partial_prob;
+        
+        % Calculate translation probability P(F|a, E)
+        p_translation = strcut();
+        
+        % iterate through all allignments
+        for fr_word = fr_words
+            fr_word = char(fr_word);
+            
+            partial_sum = 0.0;
+            
+            % initialize hash table
+            if ~isfield(p_translation, fr_word)
+                p_translation.(fr_word) = struct();
+            end
+            
+            % calculat SUM(p(F|a, E))
+            for en_word = en_words
+                en_word = char(en_word);
+                partial_sum = partial_sum + t.(en_word).(fr_word);
+            end
+            
+            % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
+            for en_word = en_words
+                en_word = char(en_word);
+                
+                % initialize hash table
+                if ~isfield(p_translation.(fr_word), en_word)
+                    p_translation.(fr_word).(en_word) = 0;
+                end
+                p_translation.(fr_word).(en_word) = p_translation.(fr_word).(en_word) + t.(en_word).(fr_word) / partial_sum;
+            end
         end
-
-        % calculate P(a|E, F)
-        perm_prob = perm_prob / sum(perm_prob);
+    end
+    
+    % M step - update the probabilities
+    for en_word = unique(eng)
+        partial_sum = 0;
+        
+        % calculate partial sum
+        for fr_word = fieldnames(t.(en_word))
+            partial_sum = partial_sum + p_translation.(fr_word).(en_word);
+        end
+        
+        for fr_word = fieldnames(t.(en_word))
+            t.(en_word).(fr_word) = p_translation.(fr_word).(en_word) / partial_sum;
+        end
     end
 end
-
-
