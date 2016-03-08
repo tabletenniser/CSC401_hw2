@@ -179,9 +179,14 @@ function t = em_step(t, eng, fre)
             end
         end
     end
+    
+    unique_eng_words = {};
+    for eng_words = eng
+        unique_eng_words = horzcat(unique_eng_words, eng_words);
+    unique_eng_words = unique(unique_eng_words);
 
     % M step - update the probabilities
-    for en_word = unique(eng)
+    for en_word = unique_eng_words
         partial_sum = 0;
 
         % calculate partial sum
