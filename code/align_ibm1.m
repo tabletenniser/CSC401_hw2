@@ -134,7 +134,7 @@ function AM = initialize(eng, fre)
         %en_word = char(en_word);
         multiplicity = length(fieldnames(AM.(en_words{i})));
         %for fr_word = fieldnames(AM.(en_word))
-        fr_words = fieldnames(AM.(en_words{i}))
+        fr_words = fieldnames(AM.(en_words{i}));
         for j = 1:length(fr_words)
             AM.(en_words{i}).(fr_words{j}) = 1.0/multiplicity;
         end
@@ -199,8 +199,6 @@ function t = em_step(t, eng, fre)
     for eng_words = eng
         unique_eng_words = horzcat(unique_eng_words, eng_words{1});
     end
-    fprintf('UNIQUE WORDS: \n')
-    disp(unique_eng_words)
     unique_eng_words = unique(unique_eng_words);
 
     % M step - update the probabilities
