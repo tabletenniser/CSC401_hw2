@@ -23,8 +23,8 @@ fn_AM = './lang_align.mat';
 LME = load('./trained_en.mat');
 LMF = load('./trained_fr.mat');
 
-LME = LME.LM
-LMF = LMF.LM
+LME = LME.LM;
+LMF = LMF.LM;
 
 % Train your alignment model of French, given English
 AMFE = align_ibm1( trainDir, numSentences, maxIter, fn_AM );
@@ -38,7 +38,7 @@ fre_sentences = textread([testDir, filesep, 'Task5.f'], '%s','delimiter','\n');
 for i = 1:length(fre_sentences)
     fre = fre_sentences{i};
     % Decode the test sentence 'fre'
-    eng = decode(preprocess(fre), LME, AMFE, 'smooth', delta, vocabSize );
+    eng = decode(preprocess(fre, 'f'), LME, AMFE, 'smooth', delta, vocabSize );
     % TODO: perform some analysis
     % add BlueMix code here
     username = '2c26f0a8-b83b-448c-8b44-daa6e799f8a3';
@@ -46,9 +46,11 @@ for i = 1:length(fre_sentences)
     curl_str = strcat('curl -u "{', username, '}":"{', password, '}" -X POST -F "text=', fre,'" -F "source=fr" -F "target=en" "https://gateway.watsonplatform.net/language-translation/api/v2/translate"');
     [status, result] = unix(curl_str);
 
-    fprintf('French sentence: %s', fre);
-    fprintf('Translated English sentence: %s', char(eng));
-    fprintf('IBM curl status: %s', status);
-    fprintf('IBM English sentence: %s', result);
+    fprintf('French sentence: %s\n', fre);
+    fprintf('Translated English sentence: %s\n', char(eng));
+    fprintf('Translated English sentence: %s\n',  strcat(eng{:}));
+    
+    fprintf('IBM curl status: %s\n', status);
+    fprintf('IBM English sentence: %s\n', result);
 end
 
