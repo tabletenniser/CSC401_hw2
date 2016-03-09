@@ -12,8 +12,8 @@ fn_LMF       = './Fre_LM.mat';
 lm_type      = 'smooth';
 delta        = '0.1';
 vocabSize    = 10000;
-numSentences_arr = [100];
-delta_arr = [0.1];
+numSentences_arr = [30 100];
+delta_arr = [0.1 0.5 1.0];
 maxIter = 5;
 fn_AM = './lang_align.mat';
 
@@ -31,7 +31,6 @@ for numSentences = numSentences_arr
     for delta = delta_arr
         % Train your alignment model of French, given English
         AMFE = align_ibm1( trainDir, numSentences, maxIter, fn_AM );
-        % ... TODO: more
 
         % TODO: a bit more work to grab the English and French sentences.
         %       You can probably reuse your previous code for this
@@ -53,12 +52,13 @@ for numSentences = numSentences_arr
             curl_str = strcat('curl -k -u ', username, ':', password, ' -X POST -F "text=', fre,'" -F "source=fr" -F "target=en" "https://gateway.watsonplatform.net/language-translation/api/v2/translate"');
             [status, result] = unix(curl_str);
 
-            bleu_score = calc_bleu_score(eng_trimmed, result)
+            for j = 1:3
+                bleu_score = calc_bleu_score(eng_trimmed, result, j);
+                fprintf('NumSentences: %s; delta: %s; fre_index: %d; n: %d; score: %d\n', NumSentences, delta, i, j, bleu_score);
+            end
 
-            fprintf('score: %d\n', bleu_score);
             fprintf('French sentence: %s\n', fre);
-            %fprintf('Translated English sentence: %s\n', char(eng));
-            fprintf('Translated English sentence: %s\n',  strcat(eng_trimmed{:}));
+            fprintf('Translated English sentence: %s\n', eng_trimmed);
             fprintf('IBM curl status: %s\n', status);
             fprintf('IBM English sentence: %s\n', result);
         end
