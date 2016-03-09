@@ -63,6 +63,3 @@ for numSentences = numSentences_arr
     end
 end
 
-function score = calc_bleu_score(translation, reference)
-    score = 1
-end
