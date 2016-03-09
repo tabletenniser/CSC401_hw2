@@ -42,21 +42,23 @@ for numSentences = numSentences_arr
             fre = fre_sentences{i};
             % Decode the test sentence 'fre'
             eng = decode(preprocess(fre, 'f'), LME, AMFE, 'smooth', delta, vocabSize );
+            eng_spaces = sprintf('%s ' , eng{:});
+            eng_trimmed = strtrim(eng_spaces);
             % TODO: perform some analysis
             % add BlueMix code here
             % username = '2c26f0a8-b83b-448c-8b44-daa6e799f8a3';
             % password = 'WKW85r9ZVwuf';
             username = 'f077e666-9e8b-4f4f-b10b-53f780513175';
             password = 'ON9Kn4AMOozi';
-            curl_str = strcat('curl -k -u "{', username, '}":"{', password, '}" -X POST -F "text=', fre,'" -F "source=fr" -F "target=en" "https://gateway.watsonplatform.net/language-translation/api/v2/translate"');
+            curl_str = strcat('curl -k -u ', username, ':', password, ' -X POST -F "text=', fre,'" -F "source=fr" -F "target=en" "https://gateway.watsonplatform.net/language-translation/api/v2/translate"');
             [status, result] = unix(curl_str);
 
-            bleu_score = calc_bleu_score(eng, result)
+            bleu_score = calc_bleu_score(eng_trimmed, result)
 
             fprintf('score: %d\n', bleu_score);
             fprintf('French sentence: %s\n', fre);
             %fprintf('Translated English sentence: %s\n', char(eng));
-            fprintf('Translated English sentence: %s\n',  strcat(eng{:}));
+            fprintf('Translated English sentence: %s\n',  strcat(eng_trimmed{:}));
             fprintf('IBM curl status: %s\n', status);
             fprintf('IBM English sentence: %s\n', result);
         end
