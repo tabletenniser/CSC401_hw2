@@ -36,7 +36,7 @@ for numSentences = numSentences_arr
         %       You can probably reuse your previous code for this
         eng_sentences = textread([testDir, filesep, 'Task5.e'], '%s','delimiter','\n');
         fre_sentences = textread([testDir, filesep, 'Task5.f'], '%s','delimiter','\n');
-        total_score = {0 0 0}
+        total_score = {0 0 0};
 
         for i = 1:length(fre_sentences)
             fre = fre_sentences{i};
