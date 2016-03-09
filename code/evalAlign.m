@@ -12,8 +12,8 @@ fn_LMF       = './Fre_LM.mat';
 lm_type      = 'smooth';
 delta        = '0.1';
 vocabSize    = 10000;
-numSentences_arr = [500 1000];
-delta_arr = [0.1 0.5 1.0];
+numSentences_arr = [1000 2000];
+delta_arr = [0.1 0.5];
 maxIter = 5;
 fn_AM = './lang_align.mat';
 
@@ -36,6 +36,7 @@ for numSentences = numSentences_arr
         %       You can probably reuse your previous code for this
         eng_sentences = textread([testDir, filesep, 'Task5.e'], '%s','delimiter','\n');
         fre_sentences = textread([testDir, filesep, 'Task5.f'], '%s','delimiter','\n');
+        total_score = {0 0 0}
 
         for i = 1:length(fre_sentences)
             fre = fre_sentences{i};
@@ -54,13 +55,19 @@ for numSentences = numSentences_arr
 
             for j = 1:3
                 bleu_score = calc_bleu_score(eng_trimmed, preprocess(result, 'e'), j);
-                fprintf('NumSentences: %d; delta: %f; fre_index: %d; n: %d; score: %f\n', numSentences, delta, i, j, bleu_score);
+                % fprintf('NumSentences: %d; delta: %f; fre_index: %d; n: %d; score: %f\n', numSentences, delta, i, j, bleu_score);
+                total_score{j} = total_score{j}+bleu_score;
             end
 
-            fprintf('French sentence: %s\n', fre);
-            fprintf('Translated English sentence: %s\n', eng_trimmed);
-            fprintf('IBM curl status: %s\n', status);
-            fprintf('IBM English sentence: %s\n', result);
+
+            % fprintf('French sentence: %s\n', fre);
+            % fprintf('Translated English sentence: %s\n', eng_trimmed);
+            % fprintf('IBM curl status: %s\n', status);
+            % fprintf('IBM English sentence: %s\n', result);
+        end
+
+        for j = 1:3
+            fprintf('AVERAGE - NumSentences: %d; delta: %f; fre_index: %d; n: %d; score: %f\n', numSentences, delta, i, j, total_score{j}/length(fre_sentences));
         end
     end
 end
