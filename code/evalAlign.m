@@ -12,7 +12,7 @@ fn_LMF       = './Fre_LM.mat';
 lm_type      = 'smooth';
 delta        = '0.1';
 vocabSize    = 10000;
-numSentences_arr = [30 100];
+numSentences_arr = [500 1000];
 delta_arr = [0.1 0.5 1.0];
 maxIter = 5;
 fn_AM = './lang_align.mat';
@@ -53,8 +53,8 @@ for numSentences = numSentences_arr
             [status, result] = unix(curl_str);
 
             for j = 1:3
-                bleu_score = calc_bleu_score(eng_trimmed, result, j);
-                fprintf('NumSentences: %s; delta: %s; fre_index: %d; n: %d; score: %d\n', NumSentences, delta, i, j, bleu_score);
+                bleu_score = calc_bleu_score(eng_trimmed, preprocess(result, 'e'), j);
+                fprintf('NumSentences: %d; delta: %f; fre_index: %d; n: %d; score: %f\n', numSentences, delta, i, j, bleu_score);
             end
 
             fprintf('French sentence: %s\n', fre);

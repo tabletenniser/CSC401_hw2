@@ -1,15 +1,18 @@
 function score = calc_bleu_score(translation, reference, n)
-    BP = 1
-    t_len = length(translation)
-    r_len = length(reference)
+    translation = strsplit(' ', translation);
+    reference = strsplit(' ', reference);
+    
+    BP = 1;
+    t_len = length(translation);
+    r_len = length(reference);
     if r_len > t_len
-        BP = exp(1-r_len*1.0/t_len)
+        BP = exp(1-r_len*1.0/t_len);
     end
 
     % Calculate unigram precision
-    same_unigram_count = 0
-    same_bigram_count = 0
-    same_trigram_count = 0
+    same_unigram_count = 0;
+    same_bigram_count = 0;
+    same_trigram_count = 0;
 
     for i = 1:length(translation)
         for j = 1:length(reference)
@@ -25,14 +28,14 @@ function score = calc_bleu_score(translation, reference, n)
             end
         end
     end
-    unigram_precision = same_unigram_count / t_len
-    bigram_precision = same_bigram_count / t_len
-    trigram_precision = same_trigram_count / t_len
-    score = BP*unigram_precision
+    unigram_precision = same_unigram_count / t_len;
+    bigram_precision = same_bigram_count / t_len;
+    trigram_precision = same_trigram_count / t_len;
+    score = BP*unigram_precision;
     if n==2
-        score = BP*sqrt(unigram_precision*bigram_precision)
+        score = BP*sqrt(unigram_precision*bigram_precision);
     end
     if n==3
-        score = BP*(unigram_precision*bigram_precision*trigram_precision)^(1/3)
+        score = BP*(unigram_precision*bigram_precision*trigram_precision)^(1/3);
     end
 end
