@@ -112,10 +112,17 @@ function AM = initialize(eng, fre)
         % iterate through all eng and french dicts
         for en_word = eng{i}
             en_word = char(en_word);
+            if isempty(en_word)
+                continue;
+            end
+            
+            if ~isfield(AM, en_word)
+                AM.(en_word) = struct();
+            end
             for fr_word = fre{i}
                 fr_word = char(fr_word);
-                if ~isfield(AM, en_word)
-                    AM.(en_word) = struct();
+                if isempty(fr_word)
+                    continue;
                 end
                 AM.(en_word).(fr_word) = 1;
             end
@@ -152,6 +159,9 @@ function t = em_step(t, eng, fre)
         % iterate through all allignments
         for fr_word = fr_words
             fr_word = char(fr_word);
+            if isempty(fr_word)
+                continue
+            end
 
             partial_sum = 0.0;
 
@@ -163,12 +173,18 @@ function t = em_step(t, eng, fre)
             % calculat SUM(p(F|a, E))
             for en_word = en_words
                 en_word = char(en_word);
+                if isempty(en_word)
+                    continue
+                end
                 partial_sum = partial_sum + t.(en_word).(fr_word);
             end
 
             % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
             for en_word = en_words
                 en_word = char(en_word);
+                if isempty(en_word)
+                    continue
+                end
 
                 % initialize hash table
                 if ~isfield(p_translation.(fr_word), en_word)
@@ -190,6 +206,9 @@ function t = em_step(t, eng, fre)
     % M step - update the probabilities
     for en_word = unique_eng_words
         en_word = char(en_word);
+        if isempty(en_word)
+            continue
+        end
         partial_sum = 0;
 
         % calculate partial sum
