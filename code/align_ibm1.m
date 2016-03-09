@@ -142,13 +142,12 @@ function t = em_step(t, eng, fre)
 % One step in the EM algorithm.
 %
     % E step
+    p_translation = struct();
     for sentence=1:length(eng)
+        
         % iterate through all sentence pairs
         en_words = eng{sentence};
-        fr_words = fre{sentence};
-
-        % Calculate translation probability P(F|a, E)
-        p_translation = struct();
+        fr_words = fre{sentence};        
 
         % iterate through all allignments
         for fr_word = fr_words
@@ -179,7 +178,7 @@ function t = em_step(t, eng, fre)
             end
         end
     end
-    
+  
     unique_eng_words = {};
     for eng_words = eng
         unique_eng_words = horzcat(unique_eng_words, eng_words{1});
@@ -194,13 +193,14 @@ function t = em_step(t, eng, fre)
         partial_sum = 0;
 
         % calculate partial sum
-        for fr_word = fieldnames(t.(en_word))
-            fr_word = char(fr_word)
+        fr_word_cells = fieldnames(t.(en_word));
+        for idx  = 1:length(fr_word_cells)
+            fr_word = char(fr_word_cells{idx});
             partial_sum = partial_sum + p_translation.(fr_word).(en_word);
         end
 
-        for fr_word = fieldnames(t.(en_word))
-            fr_word = char(fr_word)
+        for idx  = 1:length(fr_word_cells)
+            fr_word = char(fr_word_cells{idx});
             t.(en_word).(fr_word) = p_translation.(fr_word).(en_word) / partial_sum;
         end
     end
