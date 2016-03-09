@@ -48,7 +48,7 @@ for numSentences = numSentences_arr
             % password = 'WKW85r9ZVwuf';
             username = 'f077e666-9e8b-4f4f-b10b-53f780513175';
             password = 'ON9Kn4AMOozi';
-            curl_str = strcat('curl -u "{', username, '}":"{', password, '}" -X POST -F "text=', fre,'" -F "source=fr" -F "target=en" "https://gateway.watsonplatform.net/language-translation/api/v2/translate"');
+            curl_str = strcat('curl -k -u "{', username, '}":"{', password, '}" -X POST -F "text=', fre,'" -F "source=fr" -F "target=en" "https://gateway.watsonplatform.net/language-translation/api/v2/translate"');
             [status, result] = unix(curl_str);
 
             bleu_score = calc_bleu_score(eng, result)
