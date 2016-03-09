@@ -163,8 +163,11 @@ function t = em_step(t, eng, fre)
     for sentence=1:length(eng)
 
         % iterate through all sentence pairs
-        en_words = eng{sentence};
-        fr_words = fre{sentence};
+        en_words = unique(eng{sentence});
+        fr_words = unique(fre{sentence});
+
+        original_en_words = eng{sentence};
+        original_fr_words = fre{sentence};
 
         % iterate through all allignments
         for fr_word = fr_words
@@ -180,13 +183,14 @@ function t = em_step(t, eng, fre)
                 p_translation.(fr_word) = struct();
             end
 
+            f_count_f = sum(~strcmp(original_fr_words, fr_word))
             % calculat SUM(p(F|a, E))
             for en_word = en_words
                 en_word = char(en_word);
                 if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
-                partial_sum = partial_sum + t.(en_word).(fr_word);
+                partial_sum = partial_sum + t.(en_word).(fr_word)*f_count_f
             end
 
             % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
@@ -200,7 +204,8 @@ function t = em_step(t, eng, fre)
                 if ~isfield(p_translation.(fr_word), en_word)
                     p_translation.(fr_word).(en_word) = 0;
                 end
-                p_translation.(fr_word).(en_word) = p_translation.(fr_word).(en_word) + t.(en_word).(fr_word) / partial_sum;
+                e_count_e = sum(~strcmp(original_en_words, en_word))
+                p_translation.(fr_word).(en_word) = p_translation.(fr_word).(en_word) + t.(en_word).(fr_word)*f_count_f*e_count_e / partial_sum;
             end
         end
     end
