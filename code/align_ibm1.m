@@ -112,16 +112,16 @@ function AM = initialize(eng, fre)
         % iterate through all eng and french dicts
         for en_word = eng{i}
             en_word = char(en_word);
-            if isempty(en_word)
+            if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                 continue;
             end
-            
+
             if ~isfield(AM, en_word)
                 AM.(en_word) = struct();
             end
             for fr_word = fre{i}
                 fr_word = char(fr_word);
-                if isempty(fr_word)
+                if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
                     continue;
                 end
                 AM.(en_word).(fr_word) = 1;
@@ -132,13 +132,23 @@ function AM = initialize(eng, fre)
     for i = 1:length(en_words)
     %for en_word=fieldnames(AM)
         %en_word = char(en_word);
+        if isempty(en_words{i}) || strcmp(en_words{i}, 'SENTSTART') || strcmp(en_words{i}, 'SENTEND')
+            continue;
+        end
         multiplicity = length(fieldnames(AM.(en_words{i})));
         %for fr_word = fieldnames(AM.(en_word))
         fr_words = fieldnames(AM.(en_words{i}));
         for j = 1:length(fr_words)
+            if isempty(fr_words{j}) || strcmp(fr_words{j}, 'SENTSTART') || strcmp(fr_words{j}, 'SENTEND')
+                continue;
+            end
             AM.(en_words{i}).(fr_words{j}) = 1.0/multiplicity;
         end
     end
+    AM.SENTSTART = struct();
+    AM.SENTSTART.SENTSTART = 1;
+    AM.SENTEND = struct();
+    AM.SENTEND.SENTEND = 1;
 
     % TODO: your code goes here
 
@@ -151,16 +161,16 @@ function t = em_step(t, eng, fre)
     % E step
     p_translation = struct();
     for sentence=1:length(eng)
-        
+
         % iterate through all sentence pairs
         en_words = eng{sentence};
-        fr_words = fre{sentence};        
+        fr_words = fre{sentence};
 
         % iterate through all allignments
         for fr_word = fr_words
             fr_word = char(fr_word);
-            if isempty(fr_word)
-                continue
+            if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
+                continue;
             end
 
             partial_sum = 0.0;
@@ -173,7 +183,7 @@ function t = em_step(t, eng, fre)
             % calculat SUM(p(F|a, E))
             for en_word = en_words
                 en_word = char(en_word);
-                if isempty(en_word)
+                if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
                 partial_sum = partial_sum + t.(en_word).(fr_word);
@@ -182,7 +192,7 @@ function t = em_step(t, eng, fre)
             % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
             for en_word = en_words
                 en_word = char(en_word);
-                if isempty(en_word)
+                if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
 
@@ -194,7 +204,7 @@ function t = em_step(t, eng, fre)
             end
         end
     end
-  
+
     unique_eng_words = {};
     for eng_words = eng
         unique_eng_words = horzcat(unique_eng_words, eng_words{1});
@@ -204,7 +214,7 @@ function t = em_step(t, eng, fre)
     % M step - update the probabilities
     for en_word = unique_eng_words
         en_word = char(en_word);
-        if isempty(en_word)
+        if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
             continue
         end
         partial_sum = 0;
@@ -213,11 +223,17 @@ function t = em_step(t, eng, fre)
         fr_word_cells = fieldnames(t.(en_word));
         for idx  = 1:length(fr_word_cells)
             fr_word = char(fr_word_cells{idx});
+            if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
+                continue
+            end
             partial_sum = partial_sum + p_translation.(fr_word).(en_word);
         end
 
         for idx  = 1:length(fr_word_cells)
             fr_word = char(fr_word_cells{idx});
+            if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
+                continue
+            end
             t.(en_word).(fr_word) = p_translation.(fr_word).(en_word) / partial_sum;
         end
     end
