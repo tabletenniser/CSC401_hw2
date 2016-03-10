@@ -110,8 +110,9 @@ function AM = initialize(eng, fre)
     n_words = 0;
     for i=1:length(eng)
         % iterate through all eng and french dicts
-        for en_word = eng{i}
-            en_word = char(en_word);
+        % for en_word = eng{i}
+        for j = 1:length(eng{i})
+            en_word = char(eng{i}{j});
             if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                 continue;
             end
@@ -119,8 +120,9 @@ function AM = initialize(eng, fre)
             if ~isfield(AM, en_word)
                 AM.(en_word) = struct();
             end
-            for fr_word = fre{i}
-                fr_word = char(fr_word);
+            % for fr_word = fre{i}
+            for k = 1:length(fre{i})
+                fr_word = char(fre{i}{k});
                 if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
                     continue;
                 end
