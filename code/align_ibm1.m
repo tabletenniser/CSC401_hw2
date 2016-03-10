@@ -190,7 +190,11 @@ function t = em_step(t, eng, fre)
                 if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
-                partial_sum = partial_sum + t.(en_word).(fr_word)*f_count_f;
+                try
+                    partial_sum = partial_sum + t.(en_word).(fr_word)*f_count_f;
+                catch
+                    fprintf('Fuck youuuuuu son of a bitch\n')
+                end
             end
 
             % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
