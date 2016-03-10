@@ -12,7 +12,7 @@ fn_LMF       = './Fre_LM.mat';
 lm_type      = 'smooth';
 delta        = '0.1';
 vocabSize    = 10000;
-numSentences_arr = [1000 2000];
+numSentences_arr = [1000 10000 15000 30000];
 delta_arr = [0.1 0.5];
 maxIter = 5;
 fn_AM = './lang_align.mat';
@@ -63,7 +63,7 @@ for numSentences = numSentences_arr
             % fprintf('French sentence: %s\n', fre);
             % fprintf('Translated English sentence: %s\n', eng_trimmed);
             % fprintf('IBM curl status: %s\n', status);
-            % fprintf('IBM English sentence: %s\n', result);
+tabChangedCB            % fprintf('IBM English sentence: %s\n', result);
         end
 
         for j = 1:3
