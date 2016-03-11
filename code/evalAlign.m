@@ -13,8 +13,8 @@ lm_type      = 'smooth';
 delta        = '0.1';
 vocabSize    = 10000;
 numSentences_arr = [1000 10000 15000 30000];
-delta_arr = [0.1 0.5];
-maxIter = 5;
+delta_arr = [0.1 0.5 1.0];
+maxIter = 20;
 fn_AM = './lang_align.mat';
 
 % Train your language models. This is task 2 which makes use of task 1

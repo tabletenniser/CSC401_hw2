@@ -193,7 +193,8 @@ function t = em_step(t, eng, fre)
             % calculat SUM(p(F|a, E))
             for k = 1:length(en_words)
             %for en_word = en_words
-                en_word = char(en_words{k});
+
+            en_word = char(en_words{k});
                 if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
