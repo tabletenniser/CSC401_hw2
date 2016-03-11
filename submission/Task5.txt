@@ -1,0 +1,25 @@
+To better represent the experimental result, an average score is taken among all 25 sentences and the raw experimental result is shown below:
+
+AVERAGE - NumSentences: 1000; n: 1; score: 0.456861
+AVERAGE - NumSentences: 1000; n: 2; score: 0.262879
+AVERAGE - NumSentences: 1000; n: 3; score: 0.064840
+
+AVERAGE - NumSentences: 10000; n: 1; score: 0.519695
+AVERAGE - NumSentences: 10000; n: 2; score: 0.297246
+AVERAGE - NumSentences: 10000; n: 3; score: 0.097779
+
+AVERAGE - NumSentences: 15000; n: 1; score: 0.486299
+AVERAGE - NumSentences: 15000; n: 2; score: 0.266183
+AVERAGE - NumSentences: 15000; n: 3; score: 0.070390
+
+AVERAGE - NumSentences: 30000; n: 1; score: 0.494954
+AVERAGE - NumSentences: 30000; n: 2; score: 0.284078
+AVERAGE - NumSentences: 30000; n: 3; score: 0.083804
+
+
+As it can be seen above, the performance improves slightly with the size of the corpus for the alignment training.
+As the number of sentences increases from 1000 to 10000, the result (BLEU score) improves by ~5% indicating a larger
+corpus results better alignment model. However, the performance didn't change much when we increase it from 10000
+to 30000, indicating that most alignments are already captured in the first 10000 sentences. Moreover, as expected,
+the BLEU score for tri-gram is a lot lower than that of bi-gram which in turn is lower than the unigram score since
+the longer the n-gram, the less likely it's going to match with the sentence translated from IBM Bluemix.
