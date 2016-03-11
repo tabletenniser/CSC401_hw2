@@ -35,8 +35,9 @@ function outSentence = preprocess( inSentence, language )
   % separate dashes between parenthesis
   outSentence = regexprep( outSentence, '(\(.*)(-)(.*\))', '$1 $2 $3');
   % separate commas, colons, semicolons, parenthesis, dashes, math operations, question marks 
-  outSentence = regexprep( outSentence, '([,:;\)\+=-\*\/>!\?]) ', ' $1 ');
+  outSentence = regexprep( outSentence, '([,:;\)\+=-\*\/>!\?])', ' $1 ');
   outSentence = regexprep( outSentence, ' ([\(<])', ' $1 ');
+  outSentence = regexprep( outSentence, '  ', ' ');
 
   switch language
    case 'e'

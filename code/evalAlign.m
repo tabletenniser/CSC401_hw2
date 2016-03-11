@@ -12,20 +12,20 @@ fn_LMF       = './Fre_LM.mat';
 lm_type      = 'smooth';
 delta        = '0.1';
 vocabSize    = 10000;
-numSentences_arr = [10000 15000 30000];
+numSentences_arr = [1000 10000 15000 30000];
 delta_arr = [0.1 0.5];
 maxIter = 5;
 fn_AM = './lang_align.mat';
 
 % Train your language models. This is task 2 which makes use of task 1
-% LME = lm_train( trainDir, 'e', fn_LME );
-% LMF = lm_train( trainDir, 'f', fn_LMF );
+LME = lm_train( trainDir, 'e', fn_LME );
+LMF = lm_train( trainDir, 'f', fn_LMF );
 
-LME = load('./trained_en.mat');
-LMF = load('./trained_fr.mat');
+% LME = load('./trained_en.mat');
+% LMF = load('./trained_fr.mat');
 
-LME = LME.LM;
-LMF = LMF.LM;
+% LME = LME.LM;
+% LMF = LMF.LM;
 
 for numSentences = numSentences_arr
     for delta = delta_arr

@@ -121,6 +121,10 @@ function AM = initialize(eng, fre)
                 AM.(en_word) = struct();
             end
             % for fr_word = fre{i}
+            if strcmp(en_word, 'bonaventureDASH_gaspeDASH_ilesDASH_deDASH_laDASH_madeleineDASH_pabok')
+                fprintf('fuck!!!!!');
+            end
+            
             for k = 1:length(fre{i})
                 fr_word = char(fre{i}{k});
                 if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
@@ -171,9 +175,9 @@ function t = em_step(t, eng, fre)
         original_en_words = eng{sentence};
         original_fr_words = fre{sentence};
 
-        % iterate through all allignments
-        for fr_word = fr_words
-            fr_word = char(fr_word);
+        % iterate through all allignments        
+        for j = 1:length(fr_words)
+            fr_word = char(fr_words{j});
             if isempty(fr_word) || strcmp(fr_word, 'SENTSTART') || strcmp(fr_word, 'SENTEND')
                 continue;
             end
@@ -185,10 +189,11 @@ function t = em_step(t, eng, fre)
                 p_translation.(fr_word) = struct();
             end
 
-            f_count_f = sum(~strcmp(original_fr_words, fr_word));
+            f_count_f = sum(~strcmp(original_fr_words, fr_word));    % count number of diff words
             % calculat SUM(p(F|a, E))
-            for en_word = en_words
-                en_word = char(en_word);
+            for k = 1:length(en_words)
+            %for en_word = en_words
+                en_word = char(en_words{k});
                 if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
@@ -200,8 +205,10 @@ function t = em_step(t, eng, fre)
             end
 
             % calculate prob. of alignment p(a|F,E) = p(F|a, E) / SUM(p(F|a,E))
-            for en_word = en_words
-                en_word = char(en_word);
+            %for en_word = en_words                
+            for k = 1:length(en_words)
+                en_word = char(en_words{k});
+                %en_word = char(en_word);
                 if isempty(en_word) || strcmp(en_word, 'SENTSTART') || strcmp(en_word, 'SENTEND')
                     continue
                 end
